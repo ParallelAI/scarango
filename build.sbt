@@ -3,9 +3,15 @@ import Tests._
 
 name := "scarango"
 organization in ThisBuild := "com.outr"
+<<<<<<< HEAD
 version in ThisBuild := "2.4.0.1"
 scalaVersion in ThisBuild := "2.13.3"
 crossScalaVersions in ThisBuild := List("2.13.3", "2.12.12")
+=======
+version in ThisBuild := "2.4.3"
+scalaVersion in ThisBuild := "2.13.6"
+crossScalaVersions in ThisBuild := List("2.13.6", "2.12.12")
+>>>>>>> upstream/master
 scalacOptions in ThisBuild ++= Seq("-unchecked", "-deprecation")
 resolvers in ThisBuild += Resolver.sonatypeRepo("releases")
 resolvers in ThisBuild += Resolver.sonatypeRepo("snapshots")
@@ -26,9 +32,9 @@ developers in ThisBuild := List(
   Developer(id="darkfrog", name="Matt Hicks", email="matt@matthicks.com", url=url("http://matthicks.com"))
 )
 
-val youiVersion = "0.13.17"
+val youiVersion = "0.13.18"
 val profigVersion = "3.0.4"
-val scalaTestVersion = "3.2.0-M4"
+val scalaTestVersion = "3.2.3"
 
 def groupByName(tests: Seq[TestDefinition]): Seq[Group] = {
   tests.groupBy(_.name).map {
@@ -99,5 +105,6 @@ lazy val plugin = project.in(file("plugin"))
   .settings(
     name := "scarango-plugin",
     sbtPlugin := true,
-    crossSbtVersions := Vector("0.13.18", "1.3.8")
+    scalaVersion := "2.12.13",
+    crossSbtVersions := Vector("1.5.2")
   )

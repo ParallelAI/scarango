@@ -23,7 +23,11 @@ class Graph(val databaseName: String = ArangoDB.config.db,
             baseURL: URL = ArangoDB.config.url,
             credentials: Option[Credentials] = ArangoDB.credentials,
             httpClient: HttpClient = HttpClient,
+<<<<<<< HEAD
             replicationFactor: Long = 1L) {
+=======
+            val defaultCollectionOptions: CollectionOptions = CollectionOptions()) {
+>>>>>>> upstream/master
   private var _collections: List[Collection[_]] = Nil
   private var _views: List[View[_]] = Nil
   private var _initializations: List[() => Future[Unit]] = Nil
@@ -32,7 +36,13 @@ class Graph(val databaseName: String = ArangoDB.config.db,
 
   lazy val arangoDB: ArangoDB = new ArangoDB(databaseName, baseURL, credentials, httpClient)
   lazy val arangoDatabase: ArangoDatabase = arangoDB.api.db(databaseName)
+<<<<<<< HEAD
   lazy val backingStore: DocumentCollection[BackingStore] = new DocumentCollection[BackingStore](this, BackingStore, CollectionType.Document, Nil, None, replicationFactor)
+=======
+  lazy val backingStore: DocumentCollection[BackingStore] = new DocumentCollection[BackingStore](this, BackingStore, CollectionType.Document, Nil, None, backingStoreCollectionOptions)
+
+  protected def backingStoreCollectionOptions: CollectionOptions = defaultCollectionOptions
+>>>>>>> upstream/master
 
   def wal: ArangoWriteAheadLog = arangoDatabase.wal
 
@@ -70,9 +80,17 @@ class Graph(val databaseName: String = ArangoDB.config.db,
 
   def store[T](key: String): DatabaseStore[T] = macro GraphMacros.store[T]
 
+<<<<<<< HEAD
   def vertex[D <: Document[D]]: DocumentCollection[D] = macro GraphMacros.vertex[D]
   def edge[D <: Document[D]]: DocumentCollection[D] = macro GraphMacros.edge[D]
   def cached[D <: Document[D]](collection: Collection[D]): CachedCollection[D] = new CachedCollection[D](collection, replicationFactor)
+=======
+  def vertex[D <: Document[D]](): DocumentCollection[D] = macro GraphMacros.vertex[D]
+  def vertex[D <: Document[D]](options: CollectionOptions): DocumentCollection[D] = macro GraphMacros.vertexOptions[D]
+  def edge[D <: Document[D]](): DocumentCollection[D] = macro GraphMacros.edge[D]
+  def edge[D <: Document[D]](options: CollectionOptions): DocumentCollection[D] = macro GraphMacros.edgeOptions[D]
+  def cached[D <: Document[D]](collection: Collection[D]): CachedCollection[D] = new CachedCollection[D](collection)
+>>>>>>> upstream/master
   def view[D <: Document[D]](name: String,
                              collection: Collection[D],
                              includeAllFields: Boolean,
@@ -94,7 +112,7 @@ class Graph(val databaseName: String = ArangoDB.config.db,
     ()
   }
 
-  def init()(implicit ec: ExecutionContext): Future[Unit] = scribe.async {
+  def init()(implicit ec: ExecutionContext): Future[Unit] = {
     if (_initialized.compareAndSet(false, true)) {
       (for {
         // Initialize the database
@@ -129,7 +147,7 @@ class Graph(val databaseName: String = ArangoDB.config.db,
     }
   }
 
-  def truncate()(implicit ec: ExecutionContext): Future[Unit] = scribe.async {
+  def truncate()(implicit ec: ExecutionContext): Future[Unit] = {
     for {
       _ <- Future.sequence(collections.flatMap {
         case c: WritableCollection[_] => Some(c.truncate())
@@ -140,7 +158,7 @@ class Graph(val databaseName: String = ArangoDB.config.db,
     }
   }
 
-  def drop()(implicit ec: ExecutionContext): Future[Unit] = scribe.async {
+  def drop()(implicit ec: ExecutionContext): Future[Unit] = {
     arangoDatabase.drop().map(_ => ())
   }
 
@@ -161,7 +179,7 @@ class Graph(val databaseName: String = ArangoDB.config.db,
                       upgrades: List[DatabaseUpgrade],
                       newDatabase: Boolean,
                       currentlyBlocking: Boolean = true)
-                     (implicit ec: ExecutionContext): Future[Unit] = scribe.async {
+                     (implicit ec: ExecutionContext): Future[Unit] = {
     val blocking = upgrades.exists(_.blockStartup)
     val future = upgrades.headOption match {
       case Some(u) => if (!newDatabase || u.applyToNew) {

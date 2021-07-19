@@ -7,5 +7,9 @@ class DocumentCollection[D <: Document[D]](override val graph: Graph,
                                            override val `type`: CollectionType,
                                            override val indexes: List[Index],
                                            override val transaction: Option[Transaction],
+<<<<<<< HEAD
                                            override val replicationFactor: Long
                                           ) extends QueryWritableCollection[D]
+=======
+                                           override val options: CollectionOptions) extends QueryWritableCollection[D]
+>>>>>>> upstream/master
